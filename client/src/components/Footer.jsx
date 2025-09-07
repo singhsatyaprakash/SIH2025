@@ -41,7 +41,7 @@ const Footer = () => {
 
       {/* Bottom */}
       <div className="text-center text-sm text-gray-500 mt-6">
-        © 2024 SafeTour India. All rights reserved.
+        © 2025 SafeTour India. All rights reserved.
       </div>
     </footer>
   );
