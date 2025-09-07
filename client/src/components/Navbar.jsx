@@ -7,8 +7,7 @@ const Navbar = ({ isLoggedIn }) => {
   const navigate = useNavigate();
 
   // Example: pull user type from localStorage (could be "tourist" or "authority")
-  const userType = localStorage.getItem("userType"); 
-
+  const userType = localStorage.getItem("userType");
   const profilePhotoUrl = "https://ui-avatars.com/api/?name=Tourist"; // Replace with actual user photo
 
   // Close dropdown when clicking outside
@@ -57,7 +56,6 @@ const Navbar = ({ isLoggedIn }) => {
         >
           Features
         </Link>
-
         <Link
           to="/about"
           className="text-gray-700 hover:text-blue-600 font-medium transition"
@@ -85,6 +83,32 @@ const Navbar = ({ isLoggedIn }) => {
           )}
         </div>
 
+        {/* New Stakeholders Dropdown */}
+        <div className="relative">
+          <button
+            onClick={() => setOpenMenu(openMenu === "stakeholders" ? null : "stakeholders")}
+            className="text-gray-700 hover:text-blue-600 font-medium transition"
+          >
+            For Stakeholders ▾
+          </button>
+          {openMenu === "stakeholders" && (
+            <div className="absolute left-0 bg-white shadow-xl mt-2 rounded-lg w-56 py-2 z-50 animate-fadeIn">
+              <Link to="/authority/signin?family" className="block px-4 py-2 hover:bg-gray-100">
+                Family
+              </Link>
+              <Link to="/authority/signin?hotel" className="block px-4 py-2 hover:bg-gray-100">
+                Hotel
+              </Link>
+              <Link to="/authority/signin?restaurant" className="block px-4 py-2 hover:bg-gray-100">
+                Restaurant
+              </Link>
+              <Link to="/authority/signin?place" className="block px-4 py-2 hover:bg-gray-100">
+                Tourist Place
+              </Link>
+            </div>
+          )}
+        </div>
+
         {/* Authorities Dropdown */}
         <div className="relative">
           <button
@@ -95,7 +119,7 @@ const Navbar = ({ isLoggedIn }) => {
           </button>
           {openMenu === "authorities" && (
             <div className="absolute left-0 bg-white shadow-xl mt-2 rounded-lg w-56 py-2 z-50 animate-fadeIn">
-              <Link to="/authority/signin" className="block px-4 py-2 hover:bg-gray-100">
+              <Link to="/authority/dashboard" className="block px-4 py-2 hover:bg-gray-100">
                 Authority Dashboard
               </Link>
               <Link to="/authority/reports" className="block px-4 py-2 hover:bg-gray-100">

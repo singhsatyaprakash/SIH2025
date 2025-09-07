@@ -15,6 +15,7 @@ import Complaint from './pages/TouristPages/Complaint';
 import Guide from './pages/TouristPages/guide';
 import AuthoritySigin from './pages/AuthorityPages/AuthoritySigin';
 import Translator from './components/Translator';
+import AuthorityDashBoard from './pages/AuthorityPages/AuthorityDashBoard';
 
 function App() {
   return (
@@ -37,7 +38,7 @@ function App() {
 
         {/* authority */}
         <Route path='/authority/signin' element={<AuthoritySigin/>}/>
-        <Route path='/authority/dashboard' element={<AuthoritySigin/>}/>
+        <Route path='/authority/dashboard' element={<AuthorityDashBoard/>}/>
 
         <Route path='*' element={<PageNotFound/>}/>
       </Routes>
