@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useRef } from "react";
 import Navbar from "../../components/Navbar";
 import TouristSidebar from "./TouristSidebar";
 import ProfileQR from "./ProfileQR";
@@ -7,18 +7,55 @@ import Alerts from "./Alerts";
 import PoliceBooths from "./PoliceBooths";
 import SafetyScore from "./SafetyScore";
 import Footer from "../../components/Footer";
-import {Card, CardContent } from "../../components/Card";
-import {Button } from "../../components/Button";
-
+import { Card, CardContent } from "../../components/Card";
+import { Button } from "../../components/Button";
 
 const TouristDashboard = () => {
   const [isSidebarOpen, setIsSidebarOpen] = useState(true);
+  const [panicActive, setPanicActive] = useState(false);
+  const [panicCountdown, setPanicCountdown] = useState(5);
+  const panicTimerRef = useRef(null);
+
   const toggleSidebar = () => setIsSidebarOpen(!isSidebarOpen);
 
   // Static journey for demo
   const currentJourney = {
     travelId: "TOUR-X5AJN5VN",
     validTill: "2025-09-07T18:00:00Z",
+  };
+
+  // Panic Button Logic
+  const handlePanicClick = () => {
+    setPanicActive(true);
+    setPanicCountdown(5);
+    if (panicTimerRef.current) clearInterval(panicTimerRef.current);
+    panicTimerRef.current = setInterval(() => {
+      setPanicCountdown((prev) => {
+        if (prev <= 1) {
+          clearInterval(panicTimerRef.current);
+          // Here you would send the location/report to authorities
+          setPanicActive(false);
+          alert("Your location has been shared with the nearest help center and police station.");
+          return 5;
+        }
+        return prev - 1;
+      });
+    }, 1000);
+    // Optionally, get location here and prepare to send
+    if (navigator.geolocation) {
+      navigator.geolocation.getCurrentPosition(
+        (position) => {
+          // You can send position.coords.latitude & position.coords.longitude to backend
+        },
+        () => {}
+      );
+    }
+  };
+
+  const handleCancelPanic = () => {
+    setPanicActive(false);
+    setPanicCountdown(5);
+    if (panicTimerRef.current) clearInterval(panicTimerRef.current);
   };
 
   return (
@@ -58,7 +95,10 @@ const TouristDashboard = () => {
                 <p className="mb-4 text-gray-700">
                   Press in case of emergency. Your location will be sent to authorities.
                 </p>
-                <Button className="bg-red-600 hover:bg-red-700 text-white px-6 py-3 rounded-lg">
+                <Button
+                  className="bg-red-600 hover:bg-red-700 text-white px-6 py-3 rounded-lg"
+                  onClick={handlePanicClick}
+                >
                   Activate Panic Button
                 </Button>
               </CardContent>
@@ -132,9 +172,30 @@ const TouristDashboard = () => {
       </div>
 
       {/* Floating Panic Button */}
-      <button className="fixed bottom-6 left-6 bg-red-600 hover:bg-red-700 text-white px-5 py-3 rounded-full shadow-lg">
+      <button
+        className="fixed bottom-6 left-6 bg-red-600 hover:bg-red-700 text-white px-5 py-3 rounded-full shadow-lg z-50"
+        onClick={handlePanicClick}
+      >
         🚨 Panic Button
       </button>
+
+      {/* Panic Popup */}
+      {panicActive && (
+        <div className="fixed inset-0 bg-black bg-opacity-40 flex items-center justify-center z-50">
+          <div className="bg-white rounded-xl shadow-lg p-8 max-w-sm w-full text-center">
+            <h2 className="text-2xl font-bold text-red-600 mb-4">Emergency Alert</h2>
+            <p className="mb-4 text-gray-800">
+              Your location will be shared with the nearest help center and police station in <span className="font-bold">{panicCountdown}</span> seconds.
+            </p>
+            <Button
+              className="bg-gray-300 hover:bg-gray-400 text-black px-6 py-2 rounded-lg font-semibold"
+              onClick={handleCancelPanic}
+            >
+              Cancel
+            </Button>
+          </div>
+        </div>
+      )}
 
       <Footer />
     </div>

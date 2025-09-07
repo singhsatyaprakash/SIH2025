@@ -3,7 +3,7 @@ import QRCode from 'qrcode';
 import Navbar from '../../components/Navbar';
 import Footer from '../../components/Footer';
 
-const TouristNewJourney = () => {
+const TouristNewJourney = ({ onJourneyAdded }) => {
   const [countries, setCountries] = useState([]);
   const [states, setStates] = useState([]);
   const [districts, setDistricts] = useState([]);
@@ -105,6 +105,7 @@ const TouristNewJourney = () => {
 
       const data = await res.json();
       console.log('Journey saved:', data);
+      if (onJourneyAdded) onJourneyAdded();
     } catch (err) {
       console.error('Error generating journey:', err);
     }

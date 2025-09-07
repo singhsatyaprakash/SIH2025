@@ -1,32 +1,57 @@
 import React, { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { Shield, Eye, MapPin, Users, AlertTriangle, Zap } from "lucide-react";
+import { MapContainer, TileLayer, Marker, Popup } from "react-leaflet";
+import L from "leaflet";
+import "leaflet/dist/leaflet.css";
 
+// Tourist locations for the map panel (with coordinates)
 const MAP_LOCATIONS = [
-  { name: "Guwahati", left: "30%", top: "40%", risk: "safe", tourists: 247 },
-  { name: "Kaziranga NP", left: "45%", top: "55%", risk: "medium", tourists: 156 },
-  { name: "Tawang", left: "10%", top: "20%", risk: "high", tourists: 89 },
-  { name: "Majuli Island", left: "50%", top: "60%", risk: "low", tourists: 67 },
-  { name: "Shillong", left: "60%", top: "45%", risk: "medium", tourists: 134 },
+  { name: "Guwahati", coords: [26.1445, 91.7362], risk: "safe", tourists: 247 },
+  { name: "Kaziranga NP", coords: [26.5775, 93.1711], risk: "medium", tourists: 156 },
+  { name: "Tawang", coords: [27.5742, 91.8793], risk: "high", tourists: 89 },
+  { name: "Majuli Island", coords: [26.9565, 94.1450], risk: "low", tourists: 67 },
+  { name: "Shillong", coords: [25.5788, 91.8933], risk: "medium", tourists: 134 },
 ];
 
 const RISK_COLORS = {
-  safe: "#32aaff",
-  low: "#28c76f",
-  medium: "#ffaf40",
-  high: "#ff4d4f",
+  safe: "blue",
+  low: "green",
+  medium: "orange",
+  high: "red",
 };
+
+// Create custom icons for risks
+const createIcon = (color) =>
+  new L.DivIcon({
+    className: "custom-marker",
+    html: `<div style="
+        background:${color};
+        color:white;
+        border-radius:50%;
+        width:30px;
+        height:30px;
+        display:flex;
+        align-items:center;
+        justify-content:center;
+        font-size:12px;
+        font-weight:bold;
+        border:2px solid white;
+        box-shadow:0 0 5px rgba(0,0,0,0.3);
+      ">•</div>`,
+    iconSize: [30, 30],
+    iconAnchor: [15, 15],
+    popupAnchor: [0, -15],
+  });
 
 function AuthorityDashBoard() {
   const navigate = useNavigate();
   const [currentTime, setCurrentTime] = useState(new Date());
-  const isLoggedIn = !!localStorage.getItem("authorityToken") || true;
 
   useEffect(() => {
-    if (!isLoggedIn) navigate("/authority/signin");
     const timer = setInterval(() => setCurrentTime(new Date()), 1000);
     return () => clearInterval(timer);
-  }, [isLoggedIn, navigate]);
+  }, [navigate]);
 
   const summaryStats = [
     { icon: <Users />, label: "Total Tourists", value: "1,191", info: "+12.3% vs yesterday", accent: "text-blue-400" },
@@ -97,7 +122,6 @@ function StatsGrid({ summaryStats }) {
 }
 
 function MapPanel() {
-  // Hardcoded map for now, later can be replaced with API data or interactive map
   return (
     <div className="bg-[#181f3a] rounded-xl p-6 shadow flex flex-col">
       <div className="flex items-center justify-between mb-4">
@@ -112,29 +136,28 @@ function MapPanel() {
           <Dot color={RISK_COLORS.high} label="High Risk" />
         </div>
       </div>
-      <div className="relative bg-[#232c50] rounded-lg min-h-[340px] flex items-center justify-center overflow-hidden">
-        <img
-          src="https://upload.wikimedia.org/wikipedia/commons/7/7e/Northeast_India_map.png"
-          alt="Northeast India Map"
-          className="object-cover w-full h-full opacity-60"
-        />
-        {/* Hardcoded tourist locations */}
-        {MAP_LOCATIONS.map((loc) => (
-          <div
-            key={loc.name}
-            className="absolute flex flex-col items-center"
-            style={{ left: loc.left, top: loc.top, transform: "translate(-50%, -50%)" }}
-          >
-            <span
-              className="w-7 h-7 rounded-full border-2 border-white flex items-center justify-center font-bold text-xs shadow"
-              style={{ background: RISK_COLORS[loc.risk], color: "#fff" }}
-              title={`${loc.name}: ${loc.tourists} tourists`}
+      <div className="relative rounded-lg overflow-hidden" style={{ height: "400px" }}>
+        <MapContainer center={[26.5, 92.5]} zoom={7} style={{ height: "100%", width: "100%" }}>
+          <TileLayer
+            attribution='&copy; <a href="https://osm.org/copyright">OpenStreetMap</a> contributors'
+            url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
+          />
+          {MAP_LOCATIONS.map((loc) => (
+            <Marker
+              key={loc.name}
+              position={loc.coords}
+              icon={createIcon(RISK_COLORS[loc.risk])}
             >
-              {loc.tourists}
-            </span>
-            <span className="text-xs mt-1 text-white drop-shadow">{loc.name}</span>
-          </div>
-        ))}
+              <Popup>
+                <strong>{loc.name}</strong>
+                <br />
+                Tourists: {loc.tourists}
+                <br />
+                Risk: <span style={{ color: RISK_COLORS[loc.risk] }}>{loc.risk}</span>
+              </Popup>
+            </Marker>
+          ))}
+        </MapContainer>
       </div>
     </div>
   );

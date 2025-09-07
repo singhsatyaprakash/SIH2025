@@ -1,7 +1,7 @@
 import React, { useState, useEffect, useRef } from "react";
 import { useNavigate, Link } from "react-router-dom";
 
-const Navbar = ({ isLoggedIn }) => {
+const Navbar = ({ isLoggedIn, show = true }) => {
   const [openMenu, setOpenMenu] = useState(null);
   const menuRef = useRef(null);
   const navigate = useNavigate();
@@ -42,7 +42,11 @@ const Navbar = ({ isLoggedIn }) => {
   };
 
   return (
-    <nav className="flex items-center justify-between px-8 py-4 bg-white shadow-md relative z-50">
+    <nav
+      className={`flex items-center justify-between px-8 py-4 bg-white shadow-md fixed top-0 left-0 w-full z-50 transition-transform duration-300 ${
+        show ? "translate-y-0" : "-translate-y-full"
+      }`}
+    >
       {/* Logo */}
       <div className="flex items-center space-x-2 cursor-pointer" onClick={() => navigate("/")}>
         <span className="text-blue-600 font-bold text-xl">🛡️ SafeTour India</span>

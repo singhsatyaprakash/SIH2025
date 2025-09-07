@@ -27,7 +27,7 @@ function App() {
         <Route path='/tourist/registration' element={<TouristRegistration/>}/>
         <Route path='/tourist/signin' element={<ToutristSignIn/>}/>
         <Route path='/tourist/dashboard' element={<TouristDashboard/>}/>
-        <Route path="/tourist/new-journey" element={<TouristNewJourney />} />
+        <Route path="/tourist/new-journey" element={< PlannedJourney/>} />
         <Route path="/tourist/travel-planner" element={<TravelPlanner />} />
         <Route path="/translator" element={<Translator />} />
         <Route path="/tourist/planned-journey" element={<PlannedJourney />} />
